@@ -26,11 +26,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Get changed files
+      - name: Get changed Python files
         id: changed-files
         uses: tj-actions/changed-files@v42
         with:
           since_last_remote_commit: 'true'
+          files: |
+            **.py
+            !**/tests/**
+  
 
       - name: Install dependencies
         run: pip install pytest
@@ -42,10 +46,11 @@ jobs:
           echo "Это не ошибка, просто тесты отключены явно"
 
       - name: Run Python syntax check
-        if: ${{ contains(steps.changed-files.outputs.all_changed_files, '.py') }}
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         run: |
-          echo "Проверяем файлы: ${{ steps.changed-files.outputs.all_changed_files }}"
-          python -m py_compile ${{ steps.changed-files.outputs.all_changed_files }}
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            python -m py_compile "$file"
+          done
 
       - name: Run TSP tests
         if: ${{ (inputs.ShouldRunTests || github.event_name != 'workflow_dispatch') && (contains(steps.changed-files.outputs.all_changed_files, 'prob.py') || contains(steps.changed-files.outputs.all_changed_files, 'test_tsp.py')) }}
