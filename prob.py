@@ -20,7 +20,7 @@ def tsp(cities):
     return best_route, shortest_distance
 
 if __name__ == "__main__":
-    cities = [(0, 0), (1, 8), (5, 3), (3, 1)] # Example cities (x, y coordinates)
+    cities = [(0, 0), (1, 9), (5, 3), (3, 1)] # Example cities (x, y coordinates)
     best_route, shortest_distance = tsp(cities)
 
     print("Best Route:", best_route)
