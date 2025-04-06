@@ -1,24 +1,34 @@
-name: Run Check
+name: Python Syntax Check
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
     paths:
-      - '**.py'    # Триггер 
-      - '!README.md'  # Игнорирует изменения в README
+      - '**.py'
+      - '!README.md'
 
 jobs:
-  build:
+  check-syntax:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0  # Важно: получаем всю историю коммитов
+
       - name: Set up Python
         uses: actions/setup-python@v4
-        if: contains(github.event.head_commit.modified, '.py') 
         with:
           python-version: '3.11'
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+        with:
+          since_last_remote_commit: 'true'
+
       - name: Run Python check
-        if: contains(github.event.head_commit.modified, '.py')
-        run: python prob.py  # Мой файл
+        if: ${{ contains(steps.changed-files.outputs.all_changed_files, '.py') }}
+        run: |
+          echo "Проверяем файлы: ${{ steps.changed-files.outputs.all_changed_files }}"
+          python -m py_compile ${{ steps.changed-files.outputs.all_changed_files }}
+          python prob.py
