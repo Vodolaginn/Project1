@@ -36,7 +36,7 @@ jobs:
           python -m py_compile ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Run TSP tests
-        if: ${{ contains(steps.changed-files.outputs.all_changed_files, 'tsp.py') || contains(steps.changed-files.outputs.all_changed_files, 'test_tsp.py') }}
+        if: ${{ contains(steps.changed-files.outputs.all_changed_files, 'prob.py') || contains(steps.changed-files.outputs.all_changed_files, 'test_tsp.py') }}
         run: |
           echo "Запуск тестов для TSP..."
           pytest tests/test_tsp.py -v
