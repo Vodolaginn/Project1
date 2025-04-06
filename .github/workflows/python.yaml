@@ -2,21 +2,23 @@ name: Run Check
 
 on:
   push:
-    branches: ["*"]  # Проверяет все ветки
-  pull_request:
-    branches: ["*"]
+    branches: [ "main" ]
+    paths:
+      - '**.py'    # Триггер 
+      - '!README.md'  # Игнорирует изменения в README
 
 jobs:
-  check-run:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4  # Клонирует репозиторий
+      - uses: actions/checkout@v4
       
       - name: Set up Python
         uses: actions/setup-python@v4
+        if: contains(github.event.head_commit.modified, '.py') 
         with:
-          python-version: "3.11"
-          
-      - name: Run Python file
-        run: |
-          python prob.py  # Имя моего файла
+          python-version: '3.11'
+
+      - name: Run Python check
+        if: contains(github.event.head_commit.modified, '.py')
+        run: python prob.py  # Мой файл
