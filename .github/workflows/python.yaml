@@ -1,6 +1,12 @@
 name: Python Syntax Check
 
 on:
+  workflow_dispatch:
+    inputs:
+      ShouldRunTests:
+        description: 'Запускать тесты?'
+        type: boolean
+        default: true
   pull_request:
     branches: [ "main" ]
     paths:
@@ -29,6 +35,12 @@ jobs:
       - name: Install dependencies
         run: pip install pytest
 
+      - name: Check test flag
+        if: ${{ !inputs.ShouldRunTests && github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "⚠️ Тесты пропущены по требованию (ShouldRunTests=false)"
+          echo "Это не ошибка, просто тесты отключены явно"
+
       - name: Run Python syntax check
         if: ${{ contains(steps.changed-files.outputs.all_changed_files, '.py') }}
         run: |
@@ -36,7 +48,7 @@ jobs:
           python -m py_compile ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Run TSP tests
-        if: ${{ contains(steps.changed-files.outputs.all_changed_files, 'prob.py') || contains(steps.changed-files.outputs.all_changed_files, 'test_tsp.py') }}
+        if: ${{ (inputs.ShouldRunTests || github.event_name != 'workflow_dispatch') && (contains(steps.changed-files.outputs.all_changed_files, 'prob.py') || contains(steps.changed-files.outputs.all_changed_files, 'test_tsp.py')) }}
         run: |
           echo "Запуск тестов для TSP..."
           pytest tests/test_tsp.py -v
