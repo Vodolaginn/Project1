@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Важно: получаем всю историю коммитов
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,9 +26,21 @@ jobs:
         with:
           since_last_remote_commit: 'true'
 
-      - name: Run Python check
+      - name: Install dependencies
+        run: pip install pytest
+
+      - name: Run Python syntax check
         if: ${{ contains(steps.changed-files.outputs.all_changed_files, '.py') }}
         run: |
           echo "Проверяем файлы: ${{ steps.changed-files.outputs.all_changed_files }}"
           python -m py_compile ${{ steps.changed-files.outputs.all_changed_files }}
-          python prob.py
+
+      - name: Run TSP tests
+        if: ${{ contains(steps.changed-files.outputs.all_changed_files, 'tsp.py') || contains(steps.changed-files.outputs.all_changed_files, 'test_tsp.py') }}
+        run: |
+          echo "Запуск тестов для TSP..."
+          pytest tests/test_tsp.py -v
+
+      - name: Run main script
+        if: ${{ contains(steps.changed-files.outputs.all_changed_files, 'prob.py') }}
+        run: python prob.py
