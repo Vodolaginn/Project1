@@ -3,7 +3,7 @@ import itertools
 def calculate_distance(city1, city2):
     return ((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)**0.5
 
-def tspз(cities):
+def tsp(cities):
     best_route = None
     shortest_distance = float('inf')
 
