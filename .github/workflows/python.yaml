@@ -44,3 +44,11 @@ jobs:
       - name: Run main script
         if: ${{ contains(steps.changed-files.outputs.all_changed_files, 'prob.py') }}
         run: python prob.py
+
+      - name: "Как открыть кукурузу"
+        run: |
+          echo "Инструкция: Как открыть банку кукурузы:"
+          echo "1. Возьмите банку и консервный нож"
+          echo "2. Подденьте крышку ножом"
+          echo "3. Прокрутите нож по окружности банки"
+          echo "4. Поздравляем! Готово!"
